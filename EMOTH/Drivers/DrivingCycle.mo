@@ -28,7 +28,6 @@ model DrivingCycle "Definition of the driving cycle v(t)"
   final parameter Modelica.SIunits.Time t_min=combiTable.u_min "Mimimum time of table";
   final parameter Modelica.SIunits.Time t_max=combiTable.u_max "Maximum time of table";
 protected
-  constant String DirDrivingCycles="EMOTH/Resources/DrivingCycles/";
   final parameter Real conversionFactor=
     if (cycle==CycleType.Table and speedConversion==SpeedConversion.kmh)
     or  cycle==CycleType.UDC or cycle==CycleType.EUDC or cycle==CycleType.NEDC or cycle==CycleType.WLTC then 1/3.6
@@ -45,10 +44,11 @@ protected
     elseif cycle==CycleType.FTP75 then "FTP75"
     else "NoName";
   import Modelica.Utilities.Files.loadResource;
+  constant String DirDrivingCycles="modelica://EMOTH/Resources/DrivingCycles/";
   constant String fileNames[:]={
-    loadResource("modelica://EMOTH/Resources/DrivingCycles/NEDC.txt"),
-    loadResource("modelica://EMOTH/Resources/DrivingCycles/WLTC.txt"),
-    loadResource("modelica://EMOTH/Resources/DrivingCycles/FTP75.txt")};
+    loadResource(DirDrivingCycles+"NEDC.txt"),
+    loadResource(DirDrivingCycles+"WLTC.txt"),
+    loadResource(DirDrivingCycles+"FTP75.txt")};
   final parameter String internalFileName=
     if cycle==CycleType.Table then fileName
     elseif cycle==CycleType.UDC or cycle==CycleType.EUDC or cycle==CycleType.NEDC then fileNames[1]
