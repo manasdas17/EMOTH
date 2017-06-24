@@ -3,7 +3,6 @@ model DrivingCycle "Definition of the driving cycle v(t)"
   extends EMOTH.Icons.DrivingCycle;
   import EMOTH.Drivers.Components.CycleType;
   import EMOTH.Drivers.Components.SpeedConversion;
-  constant String DirDrivingCycles="EMOTH/Resources/DrivingCycles/";
   parameter EMOTH.Drivers.Components.CycleType cycle "Type of driving cycle";
   parameter EMOTH.Drivers.Components.SpeedConversion speedConversion=EMOTH.Drivers.Components.SpeedConversion.kmh "Speed conversion"
     annotation(Dialog(enable=cycle==CycleType.Table));
@@ -29,6 +28,7 @@ model DrivingCycle "Definition of the driving cycle v(t)"
   final parameter Modelica.SIunits.Time t_min=combiTable.u_min "Mimimum time of table";
   final parameter Modelica.SIunits.Time t_max=combiTable.u_max "Maximum time of table";
 protected
+  constant String DirDrivingCycles="EMOTH/Resources/DrivingCycles/";
   final parameter Real conversionFactor=
     if (cycle==CycleType.Table and speedConversion==SpeedConversion.kmh)
     or  cycle==CycleType.UDC or cycle==CycleType.EUDC or cycle==CycleType.NEDC or cycle==CycleType.WLTC then 1/3.6
@@ -44,11 +44,16 @@ protected
     elseif cycle==CycleType.WLTC then "WLTC_class3"
     elseif cycle==CycleType.FTP75 then "FTP75"
     else "NoName";
+  import Modelica.Utilities.Files.loadResource;
+  constant String fileNames[:]={
+    loadResource("modelica://EMOTH/Resources/DrivingCycles/NEDC.txt"),
+    loadResource("modelica://EMOTH/Resources/DrivingCycles/WLTC.txt"),
+    loadResource("modelica://EMOTH/Resources/DrivingCycles/FTP75.txt")};
   final parameter String internalFileName=
     if cycle==CycleType.Table then fileName
-    elseif cycle==CycleType.UDC or cycle==CycleType.EUDC or cycle==CycleType.NEDC then DirDrivingCycles+"NEDC.txt"
-    elseif cycle==CycleType.WLTC then DirDrivingCycles+"WLTC.txt"
-    elseif cycle==CycleType.FTP75 then DirDrivingCycles+"FTP75.txt"
+    elseif cycle==CycleType.UDC or cycle==CycleType.EUDC or cycle==CycleType.NEDC then fileNames[1]
+    elseif cycle==CycleType.WLTC then fileNames[2]
+    elseif cycle==CycleType.FTP75 then fileNames[3]
     else "NoName";
 public
   Modelica.Blocks.Math.Gain from_kmh(final k=conversionFactor)
